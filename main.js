@@ -402,7 +402,7 @@ var draw = function(ctx, tree, bgColor) {
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, fieldWidth, fieldHeight);  
  
-	tree.lineWidth = (+lineWidthInput.value) / 100;
+	// tree.lineWidth = (+lineWidthInput.value) / 100;
   tree.drawRoots(ctx);
 }
 
@@ -553,71 +553,24 @@ var drawTree = function (ctx, length, tree, fps) {
 	return interval;
 }
 
-const bgColorInput = document.getElementById('bg-color-input');
-
 const buttons = {
 	start: document.getElementById('button-start'),
 	stop: document.getElementById('button-stop'),
-	clear: document.getElementById('button-clear'),
 	generate: document.getElementById('button-gen'),
-	auto: document.getElementById('button-auto'),
-	addRoot: document.getElementById('button-addRoot'),
-	setSize: document.getElementById('button-setSize'),
-
+	
+	newHash: document.getElementById('button-newHash'),
 	generatePic: document.getElementById('button-generatePic'),
 };
 
-const lineWidthInput = document.getElementById('lineWidth'),
-			lineWidthCaption = document.querySelector('#lineWidth + em');
-
-lineWidthInput.addEventListener('change', () => {
-	lineWidthCaption.innerHTML = (+lineWidthInput.value/100).toFixed(2);
-})
-
+const bgColorInput = document.getElementById('bg-color-input');
 
 document.addEventListener('DOMContentLoaded', async () => {
-
-	// let palettes = await fetch('/color-palletes.json')
-	// 	.then( res => res.json() )
-	// 	.then( res => res.map( palette => palette.map( item => item["@rgb"] ) ) );
-	
-	// console.log(palettes);
-
 	let paletteCounter = 0;
 
 	let fps = 24;
 	// let fps = 1000;
 	let bgColor = "#000000";
-	let startColor = hexToRgb(document.getElementById('root-startColor').value);
-
-	let sampleRoots = [
-		{x: (0.2 * fieldWidth)|0, y: (0.2 * fieldHeight)|0, startColor: new Color(30,30,255), endColor: new Color(255,180,190)},
-		{x: (0.8 * fieldWidth)|0, y: (0.4 * fieldHeight)|0, startColor: new Color(40,200,40), endColor: new Color(0,150,255)},
-		{x: (0.4 * fieldWidth)|0, y: (0.8 * fieldHeight)|0, startColor: new Color(255,40,40), endColor: new Color(230,230,30)},
-	];
-	let tree = new Tree(sampleRoots, .8);
-
-	draw(ctx, tree, bgColor);
-
-	buttons.start.addEventListener('click', () => {
-		setTimeout(() => {
-			document.querySelector('.settings__toggle-button').classList.add('callout');
-		}, 3000);
-	}, { once: true });
-
-	buttons.setSize.addEventListener('click', () => {
-		let size = parseInt(document.getElementById('fieldSize').value);
-		fieldWidth = size;
-		fieldHeight = size;
-		draw(ctx, tree, bgColor);
-	});
-
-	bgColorInput.addEventListener('change', () => {
-		bgColor = bgColorInput.value;
-		tree.reset();
-		clearInterval(interval);
-		draw(ctx, tree, bgColor);
-	});
+	let tree = new Tree();
 
 	buttons.generate.addEventListener('click', () => {
 		clearInterval(interval);
@@ -667,28 +620,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 		buttons.start.click();
 	});
 
-	buttons.clear.addEventListener('click', () => {
-		buttons.start.classList.remove('callout');
-		tree.paused = true;
-		clearInterval(interval);
-		tree.clear();
-		draw(ctx, tree, bgColor);
-	});
-
-	buttons.addRoot.addEventListener('click', () => {
-		clearInterval(interval);
-		tree.reset();
-		tree.paused = true;
-		let rootParams = {
-			x: +document.getElementById('root-x').value,
-			y: +document.getElementById('root-y').value,
-			startColor: hexToRgb(document.getElementById('root-startColor').value),
-			endColor: hexToRgb(document.getElementById('root-endColor').value),
-		};
-		tree.addRoot(rootParams);
-		draw(ctx, tree, bgColor);
-	});
-
 	buttons.start.addEventListener('click', () => {
 		if (!tree.paused) return;
 		buttons.start.classList.remove('callout');
@@ -700,87 +631,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 		tree.paused = true;
 	});
 
-	let k = 3;
-	buttons.auto.addEventListener('click', () => {
-		buttons.start.classList.remove('callout');
-
-		let treeDrawInterval = null;
-
-		clearInterval(interval);
-		tree.paused = true;
-		if (tree.autoMode) {
-			tree.autoMode = false;
-			buttons.auto.classList.remove('active');
-			clearInterval(treeDrawInterval);
-			treeDrawInterval = null;
-			return;
-		} else {
-			tree.paused = false;
-			tree.autoMode = true;
-			buttons.auto.classList.add('active');
-			tree.clear();
-			// let a = 2 + (Math.random()*6)|0;
-			// tree.generateRoots(a);
-			document.getElementById('fieldSize').value = (k + 2) * 4;
-			fieldWidth = (k + 2) * 4;
-			fieldHeight = (k + 2) * 4;
-			tree.addRoot({
-				x: (fieldWidth / 2)|0,
-				y: (fieldHeight / 2)|0,
-				startColor: colorCycle[k % colorCycle.length],
-				endColor: colorCycle[(k+1) % colorCycle.length],
-			});
-			draw(ctx, tree, bgColor);
-		  treeDrawInterval = drawTree(ctx, -1, tree, fps);
-		}
-		
-		canvas.addEventListener('drawEnd', () => {
-			if (tree.autoMode) {
-				k++;
-				let i = 0;
-				let canvasFadeInterval = setInterval(() => {
-					if (i >= 30) {
-						clearInterval(canvasFadeInterval);
-						return;
-					} else {
-						i++;
-						if (i < 10) return;	//	0.5s delay
-						ctx.fillStyle = bgColor;
-						ctx.globalAlpha = .13;
-						ctx.fillRect(0, 0, fieldWidth, fieldHeight);
-					}
-				}, 50);
-
-				setTimeout(() => {
-					ctx.globalAlpha = 1;
-					tree.clear();
-					// let a = 2 + (Math.random()*6)|0;
-					// tree.generateRoots(a);
-					if ((k + 2) * 4 >= 100) {
-						k = 1;
-						tree.autoMode = false;
-						draw(ctx, tree, bgColor);
-						return;
-					}
-					document.getElementById('fieldSize').value = (k + 2) * 4;
-					fieldWidth = (k + 2) * 4;
-					fieldHeight = (k + 2) * 4;
-					tree.addRoot({
-						x: (fieldWidth / 2)|0,
-						y: (fieldHeight / 2)|0,
-						startColor: colorCycle[k % colorCycle.length],
-						endColor: colorCycle[(k+1) % colorCycle.length],
-					});
-					draw(ctx, tree, bgColor);
-		  		treeDrawInterval = drawTree(ctx, -1, tree, fps);
-				}, 1700);
-			}
-		}, { once: true });
-	});
-
-	document.getElementById('root-startColor').addEventListener('change', (e) => {
-		startColor = hexToRgb(document.getElementById('root-startColor').value);
-	});
 
 	buttons.generatePic.addEventListener('click', () => {
 		let minSize = 7;
@@ -802,31 +652,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 		canvas.height = canvas.offsetHeight;
 
 		buttons.generate.click();
-	})
-
-	canvas.addEventListener('mousemove', (e) => {
-		return;
-		if (!tree.paused) return;
-		draw(ctx, tree, bgColor);
-		ctx.beginPath();
-		ctx.strokeStyle = startColor.toString();
-		ctx.globalAlpha = 0.5;
-		ctx.moveTo((e.offsetX / (canvas.width/fieldWidth) + 0.5)|0, (e.offsetY / (canvas.height/fieldHeight) + 0.5)|0);
-		ctx.lineTo((e.offsetX / (canvas.width/fieldWidth) + 0.5)|0, (e.offsetY / (canvas.height/fieldHeight) + 0.5)|0);
-		ctx.stroke();
-		ctx.globalAlpha = 1;
-	});
-
-	canvas.addEventListener('click', (e) => {
-		clearInterval(interval);
-		tree.reset();
-		let rootParams = {
-			x: (e.offsetX / (canvas.width/fieldWidth) + 0.5)|0,
-			y: (e.offsetY / (canvas.height/fieldHeight) + 0.5)|0,
-			startColor: startColor,
-			endColor: hexToRgb(document.getElementById('root-endColor').value),
-		};
-		tree.addRoot(rootParams);
-		draw(ctx, tree, bgColor);
 	})
 })
