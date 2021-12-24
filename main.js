@@ -151,6 +151,8 @@ const palettes = [
 ].map(palette => palette.map(item => item["@rgb"]));
 
 
+let seed = Math.random();
+
 var canvas = document.getElementById('main');
 canvas.width = canvas.offsetWidth;
 canvas.height = canvas.offsetHeight;
@@ -159,6 +161,20 @@ var fieldHeight = 64;
 var interval;
 
 var ctx = canvas.getContext('2d');
+
+var seededRandom = (() => {
+	let lastSeed = seed;
+
+	return function (startOver) {
+		if (startOver) {
+			lastSeed = seed;
+		}
+		
+		fxrand(lastSeed);
+		lastSeed = fxrand(lastSeed);
+		return lastSeed;
+	}
+})()
 
 const hexToRgb = function (hex) {
 	return new Color (
@@ -236,16 +252,16 @@ class Tree {
 			}
 
 			let newCoords = {
-				x: Math.floor(Math.random() * (fieldWidth - 1)) + 1,
-				y: Math.floor(Math.random() * (fieldHeight - 1)) + 1,
+				x: Math.floor(seededRandom() * (fieldWidth - 1)) + 1,
+				y: Math.floor(seededRandom() * (fieldHeight - 1)) + 1,
 			};
 			
 			if (disableRootOverflow) {
 				for (; ;) {
 					if (this.roots.find(root => root.x == newCoords.x && root.y == newCoords.y)) {
 						newCoords = {
-							x: Math.floor(Math.random() * (fieldWidth - 1)) + 1,
-							y: Math.floor(Math.random() * (fieldHeight - 1)) + 1,
+							x: Math.floor(seededRandom() * (fieldWidth - 1)) + 1,
+							y: Math.floor(seededRandom() * (fieldHeight - 1)) + 1,
 						};
 					} else {
 						break;
@@ -256,14 +272,14 @@ class Tree {
 			this.addRoot({
 				x: newCoords.x,
 				y: newCoords.y,
-				// x: Math.floor(Math.random() * (fieldWidth - 1)) + 1,
-				// y: Math.floor(Math.random() * (fieldHeight - 1)) + 1,
+				// x: Math.floor(seededRandom() * (fieldWidth - 1)) + 1,
+				// y: Math.floor(seededRandom() * (fieldHeight - 1)) + 1,
 				startColor: startColor,
 				endColor: endColor,
-				mass: Math.random() * 0.85 + 0.15,
+				mass: seededRandom() * 0.85 + 0.15,
 				
 				// lineCap: "round"
-				lineCap: ["round", "square"][Math.floor(Math.random() * 2)]
+				lineCap: ["round", "square"][Math.floor(seededRandom() * 2)]
 			});
 		}
 
@@ -341,7 +357,7 @@ class Tree {
 			ctx.shadowColor = item.startColor.toString();
 			// ctx.lineWidth = (1 - item.mass) * 0.95 + 0.01;
 			ctx.shadowBlur = 25 * item.mass;
-			ctx.lineWidth = Math.random() * 0.7 + 0.3;
+			ctx.lineWidth = seededRandom() * 0.7 + 0.3;
 
 			ctx.beginPath();
 			ctx.moveTo(item.x, item.y);
@@ -366,17 +382,17 @@ class Color {
 			r = r.r;
 		}
 		if (!r && r != 0)
-			this.r = (Math.random() * 255)|0;
+			this.r = (seededRandom() * 255)|0;
 		else
 			this.r = r;
 
 		if (!g && g != 0)
-			this.g = (Math.random() * 255)|0;
+			this.g = (seededRandom() * 255)|0;
 		else
 			this.g = g;
 
 		if (!b && b != 0)
-			this.b = (Math.random() * 255)|0;
+			this.b = (seededRandom() * 255)|0;
 		else
 			this.b = b;
 		
@@ -460,7 +476,7 @@ var drawIter = function(ctx, head, tree, curRoot) {
 	}
 
 	for (let lim = outHeads.length, i = 0; i < lim; i++) {
-		let p = Math.random();
+		let p = seededRandom();
 		if (p > curRoot.mass) {
 			outHeads.splice(i, 1);
 			lim--;
@@ -565,8 +581,6 @@ const buttons = {
 const bgColorInput = document.getElementById('bg-color-input');
 
 document.addEventListener('DOMContentLoaded', async () => {
-	let paletteCounter = 0;
-
 	let fps = 24;
 	// let fps = 1000;
 	let bgColor = "#000000";
@@ -578,8 +592,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		let amount = +document.getElementById('amount').value;
 		tree.clear();
 
-		let palette = palettes[paletteCounter];
-		paletteCounter = (paletteCounter + 1) % palettes.length;
+		let palette = palettes[Math.floor(seededRandom() * palettes.length)];
 		let roots = tree.generateRoots(amount, palette);
 
 		let colorSum = {
@@ -631,11 +644,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 		tree.paused = true;
 	});
 
+	buttons.newHash.addEventListener('click', () => {
+		seed = Math.random();
+	});
+
 
 	buttons.generatePic.addEventListener('click', () => {
+		seededRandom(true);
+
 		let minSize = 7;
 		let maxSize = 24;
-		let size = Math.floor(Math.random() * (maxSize - minSize)) + minSize;
+		let size = Math.floor(seededRandom() * (maxSize - minSize)) + minSize;
 		fieldWidth = size;
 		// fieldHeight = size;
 
@@ -646,7 +665,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		let maxRoots = size * size * 0.2;
 		let minRoots = Math.floor(Math.pow(size, 0.5)) + 1;
 
-		document.getElementById('amount').value = Math.floor(Math.random() * (maxRoots - minRoots)) + minRoots;
+		document.getElementById('amount').value = Math.floor(seededRandom() * (maxRoots - minRoots)) + minRoots;
 
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
