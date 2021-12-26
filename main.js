@@ -179,8 +179,10 @@ const palettes = [
 ];
 
 var canvas = document.getElementById('main');
-canvas.width = canvas.offsetWidth;
-canvas.height = canvas.offsetHeight;
+// canvas.width = canvas.offsetWidth;
+// canvas.height = canvas.offsetHeight;
+canvas.width = 1024;
+canvas.height = 1024;
 var fieldWidth = 64;
 var fieldHeight = 64;
 var interval;
@@ -577,11 +579,25 @@ var drawTree = function (ctx, length, tree, fps) {
 	return interval;
 }
 
+function calculateCanvasSize() {
+	if (window.innerWidth > window.innerHeight) {
+		canvas.style.width = '80vh';
+		canvas.style.height = '80vh';
+	} else {
+		canvas.style.width = '80vw';
+		canvas.style.height = '80vw';
+	}
+}
+
+window.addEventListener('resize', calculateCanvasSize)
+
 document.addEventListener('DOMContentLoaded', async () => {
 	let fps = 24;
 	// let fps = 1000;
 	let bgColor = "#000000";
 	let tree = new Tree();
+
+	calculateCanvasSize();
 
 	let startHandler = () => {
 		if (!tree.paused) return;
@@ -677,8 +693,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		rootAmount = Math.floor(seededRandom() * (maxRoots - minRoots)) + minRoots;
 
-		canvas.width = canvas.offsetWidth;
-		canvas.height = canvas.offsetHeight;
+		// canvas.width = canvas.offsetWidth;
+		// canvas.height = canvas.offsetHeight;
+		canvas.width = 1024;
+		canvas.height = 1024;
 
 		function getGridSizeFeat(size) {
 			if (size < 12) {
