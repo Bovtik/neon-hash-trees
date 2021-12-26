@@ -133,7 +133,7 @@ function rgbToHsl({ r, g, b }) {
 }
 
 
-const palettes = [
+let palettes = [
 	[
 		"2C3359",
 		"37538C",
@@ -186,6 +186,8 @@ canvas.height = 1024;
 var fieldWidth = 64;
 var fieldHeight = 64;
 var interval;
+
+var isNeon = false;
 
 var rootAmount = 7;
 var ctx = canvas.getContext('2d');
@@ -262,6 +264,17 @@ class Tree {
 			if (palette && palette.length) {
 				startColor = hexToRgb('#' + palette[i % palette.length]);
 				endColor = hexToRgb('#' + palette[(i + 3) % palette.length]);
+
+				if (isNeon) {
+					let c1 = rgbToHsv(startColor);
+					c1.s = 100;
+					c1.v = 100;
+					startColor = new Color(hsvToRgb(c1));
+					let c2 = rgbToHsv(endColor);
+					c2.s = 100;
+					c2.v = 100;
+					endColor = new Color(hsvToRgb(c2));
+				}
 			} else {
 				startColor = new Color();
 				endColor = new Color();
@@ -347,9 +360,11 @@ class Tree {
 					g: 255 - (item.startColor.g + item.endColor.g) / 2,
 					b: 255 - (item.startColor.b + item.endColor.b) / 2,
 				})
+				let aa = isNeon ? 0.22 : 0.17;
+
 				grad.addColorStop(0, (new Color({
 					...oppStartColor,
-					a: 0.17
+					a: aa
 				})).toString());
 				grad.addColorStop(1, (new Color({
 					...oppStartColor,
@@ -519,7 +534,8 @@ var drawIter = function(ctx, head, tree, curRoot) {
 		let color2 = new Color(curRoot.startColor.r * (1 - colorCoeff2) + curRoot.endColor.r * colorCoeff2,
 			curRoot.startColor.g * (1 - colorCoeff2) + curRoot.endColor.g * colorCoeff2,
 			curRoot.startColor.b * (1 - colorCoeff2) + curRoot.endColor.b * colorCoeff2);
-
+		
+		
 		let grad = ctx.createLinearGradient(head.x, head.y, item.x, item.y);
 		grad.addColorStop(0, color.toString());
 		grad.addColorStop(1, color2.toString());
@@ -530,6 +546,10 @@ var drawIter = function(ctx, head, tree, curRoot) {
 
 		ctx.shadowColor = color.toString();
 		ctx.shadowBlur = 20 * Math.pow(curRoot.mass, 2);
+
+		if (isNeon) {
+			ctx.shadowBlur *= 2.5;
+		}
 
 		let minlw = ((fieldWidth - 7) / (24 - 7)) * 0.03 + 0.02;
 		ctx.lineWidth = (1 - curRoot.mass) * (1 - minlw) + minlw;
@@ -610,8 +630,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 		tree.paused = true;
 		let amount = +rootAmount;
 		tree.clear();
+		
+		if (isNeon) {
+			palettes = [palettes[1], palettes[2], palettes[4]]
+		}
 
 		let palette = palettes[Math.floor(seededRandom() * palettes.length)];
+		
 		let roots = tree.generateRoots(amount, palette);
 
 		let colorSum = {
@@ -645,7 +670,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 		// hslavg.l = 1 - hslavg.l;
 
 		// let bcol = new Color(hslToRgb(hslavg))
+		if (isNeon) {
+			bcol.r = bcol.g = bcol.b = 0;
+		}
 		bgColor = bcol.toString();
+		// bgColor = `#000000`;
 
 		document.body.style['background-color'] = bgColor;
 
@@ -678,6 +707,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	let generatePicHandler = () => {
 		seededRandom(true);
+
+		if (seededRandom() < 0.1337) {
+			isNeon = true;
+		}
 
 		let minSize = 7;
 		let maxSize = 24;
