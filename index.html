@@ -12,7 +12,7 @@
 	<div class="wrapper">
 		<canvas id="main"></canvas>
 		
-		<div class="controls">
+		<!-- <div class="controls">
 			<button class="button callout" id="button-start">
 				Start
 			</button>
@@ -25,15 +25,11 @@
 			<button class="button" id="button-generatePic">
 				generatePic
 			</button>
-		</div>	
+		</div>	 -->
 	</div>
 	<div class="settings">
 		<div class="settings__option">
-			<span>
-				<strong>Generate random roots:</strong>
-			</span>
 			<label for="">
-				<span>Amount of roots:</span>
 				<input type="text" id="amount" value="3">
 			</label>
 			<button class="button" id="button-gen">
@@ -42,56 +38,21 @@
 		</div>
 		
 		<div class="settings__option settings__add-custom-root">
-			<span>
-				<strong>Add custom root:</strong>
-			</span>
-			<label for="">
-				<span>X:</span>
-				<input type="text" id="root-x" value="1">
-			</label>
-			<label for="">
-				<span>Y:</span>
-				<input type="text" id="root-y" value="1">
-			</label>
-			<label for="">
-				<span>Start color:</span>
-				<input type="color" id="root-startColor" value="#ff2222">
-			</label>
-			<label for="">
-				<span>End color:</span>
-				<input type="color" id="root-endColor" value="#2222ff">
-			</label>
-		
-			<button class="button" id="button-addRoot">
-				Add
-			</button>
+			<input type="text" id="root-x" value="1">
+			<input type="text" id="root-y" value="1">
+			<input type="color" id="root-startColor" value="#ff2222">
+			<input type="color" id="root-endColor" value="#2222ff">
 		</div>
 		<div class="settings__option">
-			<span>
-				<strong>Line width:</strong>
-			</span>
 			<input type="range" id="lineWidth" min="1" max="100" value="75">
 			<em>0.75</em>
 		</div>
 		<div class="settings__option">
-			<span>
-				<strong>Field size:</strong>
-			</span>
-			<label for="">
-				<input type="text" id="fieldSize" value="64">
-			</label>
-			<button class="button" id="button-setSize">
-				Set size
-			</button>
+			<input type="text" id="fieldSize" value="64">
 		</div>
 		<div class="settings__option">
-			<span>
-				<strong>Background color:</strong>
-			</span>
 			<input type="color" id="bg-color-input">
 		</div>
-		
-	
 	</div>
 	
 	</div>
@@ -100,7 +61,6 @@
 	<script src="event-emitter.js"></script>
 	<script src="utils.js"></script>
 	<script src="main.js"></script>
-	<script src="menu.js"></script>
 	
 </body>
 </html>

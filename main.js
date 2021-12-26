@@ -667,7 +667,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 	let bgColor = "#000000";
 	let tree = new Tree();
 
-	buttons.generate.addEventListener('click', () => {
+	let startHandler = () => {
+		if (!tree.paused) return;
+		tree.paused = false;
+		drawTree(ctx, -1, tree, fps, fieldWidth);
+	};
+
+	let generateHandler = () => {
 		clearInterval(interval);
 		tree.paused = true;
 		let amount = +document.getElementById('amount').value;
@@ -682,7 +688,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			b: 0
 		};
 
-		roots.forEach( root => {
+		roots.forEach(root => {
 			colorSum.r += (root.startColor.r + root.endColor.r) * root.mass * 2;
 			colorSum.g += (root.startColor.g + root.endColor.g) * root.mass * 2;
 			colorSum.b += (root.startColor.b + root.endColor.b) * root.mass * 2;
@@ -711,7 +717,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		document.body.style['background-color'] = bgColor;
 
-		
+
 		let isDark = Math.max(bcol.r, Math.max(bcol.g, bcol.b)) < (255 / 4);
 		// let isDark = bcol.r + bcol.g + bcol.b > (255 * 3 / 3);
 
@@ -735,27 +741,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		draw(ctx, tree, bgColor);
 
-		buttons.start.click();
-	});
+		startHandler();
+	}
 
-	buttons.start.addEventListener('click', () => {
-		if (!tree.paused) return;
-		buttons.start.classList.remove('callout');
-		tree.paused = false;
-	  drawTree(ctx, -1, tree, fps, fieldWidth);
-	});
-	buttons.stop.addEventListener('click', () => {
-		clearInterval(interval);
-		tree.paused = true;
-	});
+	buttons.generate.addEventListener('click', generateHandler);
 
-	buttons.newHash.addEventListener('click', () => {
-		seed = Math.random();
-		console.log(seed)
-	});
+	
+
+	// buttons.start.addEventListener('click', startHandler);
 
 
-	buttons.generatePic.addEventListener('click', () => {
+
+	let generatePicHandler = () => {
 		seededRandom(true);
 
 
@@ -777,8 +774,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
 
-		buttons.generate.click();
-	})
+		generateHandler();
+	};
+
+	// buttons.generatePic.addEventListener('click', generatePicHandler)
 
 	document.body.addEventListener('mousemove', (e) => {
 		let hw = document.body.offsetWidth / 2;
@@ -794,4 +793,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		canvas.style['box-shadow'] = `${xshad}px ${yshad}px 25px 0 ${sbg.toString()}`;
 	})
+
+	generatePicHandler()
 })
