@@ -193,6 +193,7 @@ var rootAmount = 7;
 var ctx = canvas.getContext('2d');
 
 var seededRandom = fxrand;
+var paletteIdx = 0;
 
 const hexToRgb = function (hex) {
 	return new Color (
@@ -208,6 +209,16 @@ var onBorder = function (head) {
 					head.y >= fieldHeight ||
 					head.y <= 0);
 }
+
+function getGridSizeFeat(size) {
+	if (size < 11) {
+		return "small"
+	} else if (size >= 11 && size <= 17) {
+		return "medium"
+	} else {
+		return "large"
+	}
+};
 
 class Tree {
 	constructor(roots = [], lineWidth = 0.75, lineCap = "round") {
@@ -622,6 +633,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 	let startHandler = () => {
 		if (!tree.paused) return;
 		tree.paused = false;
+
+		window.$fxhashFeatures = {
+			"grid size": getGridSizeFeat(fieldWidth),
+			"neon": isNeon,
+			"color scheme": paletteIdx + 1
+			// "root population": 
+		}
+		
 		drawTree(ctx, -1, tree, fps, fieldWidth);
 	};
 
@@ -635,8 +654,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 			palettes = [palettes[1], palettes[2], palettes[4]]
 		}
 
-		let palette = palettes[Math.floor(seededRandom() * palettes.length)];
-		
+		paletteIdx = Math.floor(seededRandom() * palettes.length);
+		let palette = palettes[paletteIdx];
+
 		let roots = tree.generateRoots(amount, palette);
 
 		let colorSum = {
@@ -708,10 +728,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 	let generatePicHandler = () => {
 		seededRandom(true);
 
-		if (seededRandom() < 0.1337) {
-			isNeon = true;
+		function checkNeon() {
+			return seededRandom() < 0.1337
 		}
 
+		isNeon = checkNeon()
+		
 		let minSize = 7;
 		let maxSize = 24;
 		let size = Math.floor(seededRandom() * (maxSize - minSize)) + minSize;
@@ -730,20 +752,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 		// canvas.height = canvas.offsetHeight;
 		canvas.width = 1024;
 		canvas.height = 1024;
-
-		function getGridSizeFeat(size) {
-			if (size < 12) {
-				return "small"
-			} else if (size >= 12 && size <= 19) {
-				return "medium"
-			} else {
-				return "large"
-			}
-		};
-
-		window.$fxhashFeatures = {
-			"grid Size": getGridSizeFeat(size),
-		}
 
 		generateHandler();
 	};
