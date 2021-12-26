@@ -784,7 +784,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		let hw = document.body.offsetWidth / 2;
 		let hh = document.body.offsetHeight / 2;
 
-		let maxShadowOffset = 15;
+		let maxShadowOffset = 8;
 
 		let kw = -1 * (e.screenX - hw) / hw;
 		let kh = -1 * (e.screenY - hh) / hh;
@@ -792,6 +792,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 		let xshad = (kw * maxShadowOffset);
 		let yshad = (kh * maxShadowOffset);
 
-		canvas.style['box-shadow'] = `${xshad}px ${yshad}px 35px 0 ${sbg.toString()}`;
+		canvas.style['box-shadow'] = `${xshad}px ${yshad}px 25px 0 ${sbg.toString()}`;
 	})
 })
