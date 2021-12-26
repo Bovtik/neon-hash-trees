@@ -481,6 +481,13 @@ class Color {
 	}
 }
 
+let sbg = new Color({
+	r: 0,
+	g: 0,
+	b: 0,
+	a: .25
+})
+
 const colorCycle = [];
 ['#ff2222', '#2222ff', '#22ff22', '#00ddff', '#aa22aa', '#ffff22'].forEach((item) => {
 	colorCycle.push(hexToRgb(item));
@@ -703,8 +710,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 		bgColor = bcol.toString();
 
 		document.body.style['background-color'] = bgColor;
-		let cv = Math.max(bcol.r, Math.max(bcol.g, bcol.b)) > (255 / 3) ? 0 : 255;
-		canvas.style['box-shadow'] = `0 0 25px 0 rgba(${cv}, ${cv}, ${cv}, .25)`;
+
+		
+		let isDark = Math.max(bcol.r, Math.max(bcol.g, bcol.b)) < (255 / 4);
+		// let isDark = bcol.r + bcol.g + bcol.b > (255 * 3 / 3);
+
+		if (isDark) {
+			// sbg.r = 255 - bcol.r;
+			// sbg.g = 255 - bcol.g;
+			// sbg.b = 255 - bcol.b;
+			sbg.r = 200;
+			sbg.g = 200;
+			sbg.b = 200;
+			sbg.a = 0.19;
+		} else {
+			sbg.r = 0;
+			sbg.g = 0;
+			sbg.b = 0;
+			sbg.a = 0.25;
+		}
+
+		canvas.style['box-shadow'] = `0 0 25px 0 ${sbg.toString()}`;
 
 
 		draw(ctx, tree, bgColor);
@@ -752,5 +778,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 		canvas.height = canvas.offsetHeight;
 
 		buttons.generate.click();
+	})
+
+	document.body.addEventListener('mousemove', (e) => {
+		let hw = document.body.offsetWidth / 2;
+		let hh = document.body.offsetHeight / 2;
+
+		let maxShadowOffset = 15;
+
+		let kw = -1 * (e.screenX - hw) / hw;
+		let kh = -1 * (e.screenY - hh) / hh;
+
+		let xshad = (kw * maxShadowOffset);
+		let yshad = (kh * maxShadowOffset);
+
+		canvas.style['box-shadow'] = `${xshad}px ${yshad}px 35px 0 ${sbg.toString()}`;
 	})
 })
