@@ -231,6 +231,7 @@ var fieldWidth = 64;
 var fieldHeight = 64;
 var interval;
 
+var rootAmount = 7;
 var ctx = canvas.getContext('2d');
 
 var seededRandom = fxrand;
@@ -588,7 +589,6 @@ var drawIter = function(ctx, head, tree, curRoot) {
 }
 
 var drawTree = function (ctx, length, tree, fps) {
-	// ctx.lineWidth = (+document.getElementById('lineWidth').value) / 100;
   let i = 0;
   interval = setInterval(() => {
   	let newHeads = [];
@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	let generateHandler = () => {
 		clearInterval(interval);
 		tree.paused = true;
-		let amount = +document.getElementById('amount').value;
+		let amount = +rootAmount;
 		tree.clear();
 
 		let palette = palettes[Math.floor(seededRandom() * palettes.length)];
@@ -717,12 +717,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		// let coef = window.innerHeight / window.innerWidth;
 		// fieldHeight = Math.round(size * coef);
-		document.getElementById('fieldSize').value = size;
 
 		let maxRoots = size * size * 0.2;
 		let minRoots = Math.floor(Math.pow(size, 0.5)) + 1;
 
-		document.getElementById('amount').value = Math.floor(seededRandom() * (maxRoots - minRoots)) + minRoots;
+		rootAmount = Math.floor(seededRandom() * (maxRoots - minRoots)) + minRoots;
 
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
