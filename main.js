@@ -188,6 +188,7 @@ var fieldHeight = 64;
 var interval;
 
 var isNeon = false;
+var population = 0;
 
 var rootAmount = 7;
 var ctx = canvas.getContext('2d');
@@ -217,6 +218,20 @@ function getGridSizeFeat(size) {
 		return "medium"
 	} else {
 		return "large"
+	}
+};
+
+function getRootPopulationFeat(pop) {
+	if (pop < 0.15) {
+		return "very low"
+	} else if (pop >= 0.15 && pop < 0.3) {
+		return "low"
+	} else if (pop >= 0.3 && pop < 0.6) {
+		return "medium"
+	} else if (pop >= 0.6 && pop < 0.9) {
+		return "high"
+	} else {
+		return "very high"
 	}
 };
 
@@ -637,8 +652,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 		window.$fxhashFeatures = {
 			"grid size": getGridSizeFeat(fieldWidth),
 			"neon": isNeon,
-			"color scheme": paletteIdx + 1
-			// "root population": 
+			"color scheme": paletteIdx + 1,
+			"root population": getRootPopulationFeat(population)
 		}
 		
 		drawTree(ctx, -1, tree, fps, fieldWidth);
@@ -747,6 +762,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 		let minRoots = Math.floor(Math.pow(size, 0.5)) + 1;
 
 		rootAmount = Math.floor(seededRandom() * (maxRoots - minRoots)) + minRoots;
+
+		population = rootAmount / maxRoots;
 
 		// canvas.width = canvas.offsetWidth;
 		// canvas.height = canvas.offsetHeight;
