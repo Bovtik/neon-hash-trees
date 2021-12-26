@@ -680,6 +680,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
 
+		function getGridSizeFeat(size) {
+			if (size < 12) {
+				return "small"
+			} else if (size >= 12 && size <= 19) {
+				return "medium"
+			} else {
+				return "large"
+			}
+		};
+
+		window.$fxhashFeatures = {
+			"grid Size": getGridSizeFeat(size),
+		}
+
 		generateHandler();
 	};
 
