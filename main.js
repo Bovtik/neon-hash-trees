@@ -224,9 +224,6 @@ const palettes = [
 	
 ].map(palette => palette.map(item => item["@rgb"]));
 
-
-let seed = Math.random();
-
 var canvas = document.getElementById('main');
 canvas.width = canvas.offsetWidth;
 canvas.height = canvas.offsetHeight;
@@ -236,19 +233,7 @@ var interval;
 
 var ctx = canvas.getContext('2d');
 
-var seededRandom = (() => {
-	let lastSeed = seed;
-
-	return function (startOver) {
-		if (startOver) {
-			lastSeed = seed;
-		}
-		
-		fxrand(lastSeed);
-		lastSeed = fxrand(lastSeed);
-		return lastSeed;
-	}
-})()
+var seededRandom = fxrand;
 
 const hexToRgb = function (hex) {
 	return new Color (
@@ -488,18 +473,11 @@ let sbg = new Color({
 	a: .25
 })
 
-const colorCycle = [];
-['#ff2222', '#2222ff', '#22ff22', '#00ddff', '#aa22aa', '#ffff22'].forEach((item) => {
-	colorCycle.push(hexToRgb(item));
-})
-
-
 var draw = function(ctx, tree, bgColor) {
 	ctx.setTransform(canvas.width / fieldWidth, 0, 0, canvas.height / fieldHeight, 0, 0);
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, fieldWidth, fieldHeight);  
  
-	// tree.lineWidth = (+lineWidthInput.value) / 100;
   tree.drawRoots(ctx);
 }
 
@@ -593,11 +571,6 @@ var drawIter = function(ctx, head, tree, curRoot) {
 		// ctx.strokeStyle = color.toString();
 		ctx.lineCap = curRoot.lineCap;
 
-		// let hsvColor = rgbToHsv(color);
-		// console.log(hsvColor);
-		// hsvColor.v *= 1;
-		// let col = new Color(hsvToRgb(hsvColor));
-		// ctx.shadowColor = col.toString();
 		ctx.shadowColor = color.toString();
 		ctx.shadowBlur = 20 * Math.pow(curRoot.mass, 2);
 
@@ -649,17 +622,6 @@ var drawTree = function (ctx, length, tree, fps) {
 
 	return interval;
 }
-
-const buttons = {
-	start: document.getElementById('button-start'),
-	stop: document.getElementById('button-stop'),
-	generate: document.getElementById('button-gen'),
-	
-	newHash: document.getElementById('button-newHash'),
-	generatePic: document.getElementById('button-generatePic'),
-};
-
-const bgColorInput = document.getElementById('bg-color-input');
 
 document.addEventListener('DOMContentLoaded', async () => {
 	let fps = 24;
@@ -744,17 +706,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 		startHandler();
 	}
 
-	buttons.generate.addEventListener('click', generateHandler);
-
-	
-
-	// buttons.start.addEventListener('click', startHandler);
-
-
-
 	let generatePicHandler = () => {
 		seededRandom(true);
-
 
 		let minSize = 7;
 		let maxSize = 24;
@@ -777,7 +730,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 		generateHandler();
 	};
 
-	// buttons.generatePic.addEventListener('click', generatePicHandler)
 
 	document.body.addEventListener('mousemove', (e) => {
 		let hw = document.body.offsetWidth / 2;
