@@ -147,6 +147,80 @@ const palettes = [
 			"@b": "179"
 		}
 	],
+	[
+		{
+			"@name": "color-theme_44b38139ca8cb39f8ee346ac3c203118-1",
+			"@rgb": "025373",
+			"@r": "2",
+			"@g": "83",
+			"@b": "115"
+		},
+		{
+			"@name": "color-theme_44b38139ca8cb39f8ee346ac3c203118-2",
+			"@rgb": "0396A6",
+			"@r": "3",
+			"@g": "150",
+			"@b": "166"
+		},
+		{
+			"@name": "color-theme_44b38139ca8cb39f8ee346ac3c203118-3",
+			"@rgb": "EED5B7",
+			"@r": "238",
+			"@g": "213",
+			"@b": "183"
+		},
+		{
+			"@name": "color-theme_44b38139ca8cb39f8ee346ac3c203118-4",
+			"@rgb": "F29544",
+			"@r": "242",
+			"@g": "149",
+			"@b": "68"
+		},
+		{
+			"@name": "color-theme_44b38139ca8cb39f8ee346ac3c203118-5",
+			"@rgb": "9BC0D0",
+			"@r": "155",
+			"@g": "192",
+			"@b": "208"
+		}
+	],
+	[
+		{
+			"@name": "Panorama-n°1-1",
+			"@rgb": "2D2E40",
+			"@r": "45",
+			"@g": "46",
+			"@b": "64"
+		},
+		{
+			"@name": "Panorama-n°1-2",
+			"@rgb": "223A86",
+			"@r": "34",
+			"@g": "42",
+			"@b": "166"
+		},
+		{
+			"@name": "Panorama-n°1-3",
+			"@rgb": "F27405",
+			"@r": "242",
+			"@g": "116",
+			"@b": "5"
+		},
+		{
+			"@name": "Panorama-n°1-4",
+			"@rgb": "F25C05",
+			"@r": "242",
+			"@g": "92",
+			"@b": "5"
+		},
+		{
+			"@name": "Panorama-n°1-5",
+			"@rgb": "F2C5BB",
+			"@r": "242",
+			"@g": "197",
+			"@b": "187"
+		}
+	]
 	
 ].map(palette => palette.map(item => item["@rgb"]));
 
@@ -628,6 +702,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 		// let bcol = new Color(hslToRgb(hslavg))
 		bgColor = bcol.toString();
 
+		document.body.style['background-color'] = bgColor;
+		let cv = Math.max(bcol.r, Math.max(bcol.g, bcol.b)) > (255 / 3) ? 0 : 255;
+		canvas.style['box-shadow'] = `0 0 25px 0 rgba(${cv}, ${cv}, ${cv}, .25)`;
+
+
 		draw(ctx, tree, bgColor);
 
 		buttons.start.click();
@@ -646,20 +725,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	buttons.newHash.addEventListener('click', () => {
 		seed = Math.random();
+		console.log(seed)
 	});
 
 
 	buttons.generatePic.addEventListener('click', () => {
 		seededRandom(true);
 
+
 		let minSize = 7;
 		let maxSize = 24;
 		let size = Math.floor(seededRandom() * (maxSize - minSize)) + minSize;
 		fieldWidth = size;
-		// fieldHeight = size;
+		fieldHeight = size;
 
-		let coef = window.innerHeight / window.innerWidth;
-		fieldHeight = Math.round(size * coef);
+		// let coef = window.innerHeight / window.innerWidth;
+		// fieldHeight = Math.round(size * coef);
 		document.getElementById('fieldSize').value = size;
 
 		let maxRoots = size * size * 0.2;

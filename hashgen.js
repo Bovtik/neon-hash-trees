@@ -1,6 +1,7 @@
 function fxrand(seed) {
   let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ"
-  var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(seed * alphabet.length) | 0]).join('')
+  var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join('')
+  console.log('FX = ', fxhash);
   let b58dec = (str) => str.split('').reduce((p, c, i) => p + alphabet.indexOf(c) * (Math.pow(alphabet.length, str.length - i - 1)), 0)
   let fxhashTrunc = fxhash.slice(2)
   let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", 'g')
