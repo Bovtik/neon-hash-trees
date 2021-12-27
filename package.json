@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "javascript-obfuscator": "^3.0.0"
+  },
+  "scripts": {
+    "build": "javascript-obfuscator main.js --output out.js --options-preset=high-obfuscation --reserved-names='fxrand','$fxhashFeatures','grid size','neon','color scheme','root population','fxpreview()' --rename-globals=true"
+  }
+}
