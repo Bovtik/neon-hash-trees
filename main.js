@@ -788,6 +788,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		canvas.style['box-shadow'] = `${xshad}px ${yshad}px 25px 0 ${sbg.toString()}`;
 	})
+	canvas.addEventListener('drawEnd', () => {
+		fxpreview();
+	})
 
 	generatePicHandler()
 })
