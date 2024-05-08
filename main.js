@@ -615,7 +615,6 @@ var drawIter = function(ctx, head, tree, curRoot) {
 }
 
 var drawTree = function (ctx, length, tree, fps) {
-	// ctx.lineWidth = (+document.getElementById('lineWidth').value) / 100;
   let i = 0;
   interval = setInterval(() => {
   	let newHeads = [];
@@ -650,27 +649,21 @@ var drawTree = function (ctx, length, tree, fps) {
 	return interval;
 }
 
-const buttons = {
-	start: document.getElementById('button-start'),
-	stop: document.getElementById('button-stop'),
-	generate: document.getElementById('button-gen'),
-	
-	newHash: document.getElementById('button-newHash'),
-	generatePic: document.getElementById('button-generatePic'),
-};
-
-const bgColorInput = document.getElementById('bg-color-input');
-
 document.addEventListener('DOMContentLoaded', async () => {
 	let fps = 24;
 	// let fps = 1000;
 	let bgColor = "#000000";
 	let tree = new Tree();
 
-	buttons.generate.addEventListener('click', () => {
+	const startDraw = function startDraw() {
+		if (!tree.paused) return;
+		tree.paused = false;
+		drawTree(ctx, -1, tree, fps, fieldWidth);
+	}
+
+	const drawPic = function drawPic(amount) {
 		clearInterval(interval);
 		tree.paused = true;
-		let amount = +document.getElementById('amount').value;
 		tree.clear();
 
 		let palette = palettes[Math.floor(seededRandom() * palettes.length)];
@@ -682,7 +675,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			b: 0
 		};
 
-		roots.forEach( root => {
+		roots.forEach(root => {
 			colorSum.r += (root.startColor.r + root.endColor.r) * root.mass * 2;
 			colorSum.g += (root.startColor.g + root.endColor.g) * root.mass * 2;
 			colorSum.b += (root.startColor.b + root.endColor.b) * root.mass * 2;
@@ -711,7 +704,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		document.body.style['background-color'] = bgColor;
 
-		
+
 		let isDark = Math.max(bcol.r, Math.max(bcol.g, bcol.b)) < (255 / 4);
 		// let isDark = bcol.r + bcol.g + bcol.b > (255 * 3 / 3);
 
@@ -735,27 +728,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		draw(ctx, tree, bgColor);
 
-		buttons.start.click();
-	});
+		startDraw()
+	}
 
-	buttons.start.addEventListener('click', () => {
-		if (!tree.paused) return;
-		buttons.start.classList.remove('callout');
-		tree.paused = false;
-	  drawTree(ctx, -1, tree, fps, fieldWidth);
-	});
-	buttons.stop.addEventListener('click', () => {
-		clearInterval(interval);
-		tree.paused = true;
-	});
-
-	buttons.newHash.addEventListener('click', () => {
-		seed = Math.random();
-		console.log(seed)
-	});
-
-
-	buttons.generatePic.addEventListener('click', () => {
+	const generatePic = function generatePic() {
 		seededRandom(true);
 
 
@@ -765,19 +741,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 		fieldWidth = size;
 		fieldHeight = size;
 
-		// let coef = window.innerHeight / window.innerWidth;
-		// fieldHeight = Math.round(size * coef);
-		document.getElementById('fieldSize').value = size;
-
 		let maxRoots = size * size * 0.2;
 		let minRoots = Math.floor(Math.pow(size, 0.5)) + 1;
 
-		document.getElementById('amount').value = Math.floor(seededRandom() * (maxRoots - minRoots)) + minRoots;
+		const amount = Math.floor(seededRandom() * (maxRoots - minRoots)) + minRoots;
 
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
 
-		buttons.generate.click();
+		drawPic(amount)
+	}
+
+	canvas.addEventListener('click', () => {
+		generatePic()
 	})
 
 	document.body.addEventListener('mousemove', (e) => {
@@ -794,4 +770,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		canvas.style['box-shadow'] = `${xshad}px ${yshad}px 25px 0 ${sbg.toString()}`;
 	})
+
+	generatePic()
 })
